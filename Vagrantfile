@@ -45,7 +45,7 @@ Vagrant.configure("2") do |config|
       @ansibleref=ansible
   end
 
-  (0..1).each {|idx|
+  (0..2).each {|idx|
     config.vm.define "master-#{idx}" do |master|
       add_ssh_pub_key master.vm
       master.vm.provider "virtualbox" do |virtualbox|
