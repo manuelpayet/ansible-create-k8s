@@ -25,25 +25,11 @@ Vagrant.configure("2") do |config|
   # boxes at https://vagrantcloud.com/search.
   config.vm.box = "debian/stretch64"
   
-  config.vm.define "ansible" do |ansible|
-      ansible.vm.hostname = "ansible"
-      ansible.vm.network "private_network", ip: "10.20.30.10",
-        virtualbox__intnet: true
-      
-      ansible.vm.provision "shell", inline: "echo deb http://ppa.launchpad.net/ansible/ansible/ubuntu trusty main | sudo tee -a /etc/apt/sources.list"
-      
-      ansible.vm.provision "shell", inline: "sudo apt install -y dirmngr --install-recommends"
-      ansible.vm.provision "shell", inline: "sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 93C4A3FD7BB9C367"
-      ansible.vm.provision "shell", inline: "sudo apt update"
-      ansible.vm.provision "shell", inline: "sudo apt install -y ansible"
+  host_file = "#{File.dirname(__FILE__)}/computed_host"
 
-      ansible.vm.provision "file", source: "./autocomplete/ansible-completion.bash", destination: "~/ansible-completion.bash"
-      ansible.vm.provision "shell", inline: "sudo mv ~vagrant/ansible-completion.bash /etc/bash_completion.d/ansible-completion.bash && sudo chmod +x /etc/bash_completion.d/ansible-completion.bash"
+  File.write(host_file, '', mode: 'w')
 
-      ansible.vm.provision "shell", inline: "cp /vagrant/ssh_keys/id_rsa ~vagrant/.ssh && chown vagrant ~vagrant/.ssh/id_rsa"
 
-      @ansibleref=ansible
-  end
 
   (0..2).each {|idx|
     config.vm.define "master-#{idx}" do |master|
@@ -57,8 +43,8 @@ Vagrant.configure("2") do |config|
       ip = "10.20.30.2#{idx}"
       master.vm.network "private_network", ip: "#{ip}",
         virtualbox__intnet: true
-
-      @ansibleref.vm.provision "shell", inline: "echo #{ip} #{master.vm.hostname} | sudo tee -a /etc/hosts"
+      File.write(host_file, "#{ip} #{master.vm.hostname}\n", mode: 'a')
+      #@ansibleref.vm.provision "shell", inline: "echo #{ip} #{master.vm.hostname} | sudo tee -a /etc/hosts"
     end
 
   }
@@ -78,11 +64,43 @@ Vagrant.configure("2") do |config|
       worker.vm.network "private_network", ip: "#{ip}",
         virtualbox__intnet: true
       
-
-      @ansibleref.vm.provision "shell", inline: "echo #{ip} #{worker.vm.hostname}  | sudo tee -a /etc/hosts"
+      File.write(host_file, "#{ip} #{worker.vm.hostname}\n", mode: 'a')
+      # @ansibleref.vm.provision "shell", inline: "echo #{ip} #{worker.vm.hostname}  | sudo tee -a /etc/hosts"
     end
 
   }
+
+  config.vm.define "ansible", primary: true do |ansible|
+    ansible.vm.hostname = "ansible"
+    ansible.vm.network "private_network", ip: "10.20.30.10",
+      virtualbox__intnet: true
+    
+    ansible.vm.provision "shell", inline: "echo deb http://ppa.launchpad.net/ansible/ansible/ubuntu trusty main | sudo tee -a /etc/apt/sources.list"
+    
+    ansible.vm.provision "shell", inline: "sudo apt install -y dirmngr --install-recommends"
+    ansible.vm.provision "shell", inline: "sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 93C4A3FD7BB9C367"
+    ansible.vm.provision "shell", inline: "sudo apt update"
+    ansible.vm.provision "shell", inline: "sudo apt install -y ansible"
+
+    ansible.vm.provision "file", source: "./autocomplete/ansible-completion.bash", destination: "~/ansible-completion.bash"
+    ansible.vm.provision "shell", inline: "sudo mv ~vagrant/ansible-completion.bash /etc/bash_completion.d/ansible-completion.bash && sudo chmod +x /etc/bash_completion.d/ansible-completion.bash"
+
+    ansible.vm.provision "shell", inline: "cp /vagrant/ssh_keys/id_rsa ~vagrant/.ssh && chown vagrant ~vagrant/.ssh/id_rsa"
+
+
+    ansible.vm.provision "file", source: host_file, destination: "/vagrant/computed_host"
+    ansible.vm.provision "shell", inline: <<-SHELL
+      set -e
+      cat /vagrant/computed_host | sudo tee -a /etc/hosts
+    SHELL
+
+    ansible.vm.provision "shell", inline: <<-SHELL
+      set -e
+      cd /vagrant/ansible/kubernetes
+      sudo -u vagrant ansible-playbook kubernetes.playbook.yml
+    SHELL
+    
+end
 
   
   

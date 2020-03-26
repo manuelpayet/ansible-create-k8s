@@ -1,0 +1,23 @@
+- name: create kubernetes group
+  group:
+      name: kubernetes 
+      system: yes
+  become: yes
+
+- name: create kubernetes user
+  user:
+      name: kubernetes 
+      comment: kubernetes system account 
+      create_home: yes 
+      home: {{kube-install}}
+      group: kubernetes
+      shell: /bin/bash 
+      system: yes
+
+- name: create kubernetes bin folder
+  file:
+    state: directory
+    owner: kubernetes
+    path: "{{kube-install}}/bin"
+    mode: u=rwx,g=rx,o=
+

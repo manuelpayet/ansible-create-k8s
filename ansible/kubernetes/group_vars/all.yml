@@ -1,6 +1,8 @@
 ---
 binaries: "~/ansible/binaries"
 binaries_etcd: "{{binaries}}/etcd"
+binaries_k8s_server: "{{binaries}}/kube-server"
+
 pki_gen: "~/ansible/pki"
 pki_gen_bin: "~/ansible/pki/bin"
 pki_gen_conf: "{{pki_gen}}/conf"

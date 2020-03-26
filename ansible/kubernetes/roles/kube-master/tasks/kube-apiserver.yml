@@ -1,0 +1,9 @@
+- name: install kube-apiserver
+  unarchive:
+      src: "{{kube-install}}/kubernetes-server-linux-amd64.tar.gz" 
+      dest: "{{kube-install}}/bin" 
+      owner: kubernetes 
+      extra_opts:  
+        - --strip=2
+        - --wildcards
+        - '*/kube-apiserver'

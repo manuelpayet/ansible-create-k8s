@@ -28,7 +28,6 @@
         name: certificate-authority
 
 
-
 - hosts: kubeworker
   tasks:
     - include_role:
@@ -36,3 +35,11 @@
   vars: 
     ip_for_host: "{{hostvars['localhost']['ip_for_host']}}"
     workers_in_inventory: "{{groups.kubeworker}}"
+
+- hosts: kubemaster
+  tasks:
+    - include_role:
+        name: kube-master
+  vars: 
+    ip_for_host: "{{hostvars['localhost']['ip_for_host']}}"
+    masters_in_inventory: "{{groups.kubemaster}}"

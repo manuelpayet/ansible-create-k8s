@@ -12,3 +12,15 @@
   get_url:
     url: https://github.com/etcd-io/etcd/releases/download/v3.4.5/etcd-v3.4.5-linux-amd64.tar.gz
     dest: "{{binaries_etcd}}/etcd.tar.gz"
+
+
+- name: "prepare etcd download folder"
+  file:
+    state: directory
+    path: "{{binaries_k8s_server}}"
+  
+- name: download kubernetes server binaries
+  get_url:
+    url: https://dl.k8s.io/v1.17.0/kubernetes-server-linux-amd64.tar.gz
+    dest: "{{binaries_k8s_server}}/kubernetes-server-linux-amd64.tar.gz"
+    
