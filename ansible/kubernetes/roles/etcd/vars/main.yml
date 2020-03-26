@@ -1,0 +1,3 @@
+---
+etcd_install_folder: /opt/etcd
+etcd_certs_folder: "{{pki_gen_certs}}/etcd-certs"

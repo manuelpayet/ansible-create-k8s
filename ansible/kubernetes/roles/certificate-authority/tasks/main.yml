@@ -1,0 +1,4 @@
+---
+- include: prepare-binaries.yml
+- include: create-ca.yml
+- include: create-etcd-certs.yml

@@ -1,0 +1,38 @@
+-   name: "prepare bin folder"
+    file:
+        state: directory
+        path: "{{pki_gen_bin}}"
+
+-   name: "check if cfssl already exists"
+    stat:
+        path: "{{pki_gen_bin}}/cfssl"
+    register: cfssl
+
+-   name: "download CloudFlare SSL (cfssl)"
+    when: cfssl.stat.exists == false
+    get_url:
+        dest: "{{pki_gen_bin}}/cfssl"
+        url: "https://github.com/cloudflare/cfssl/releases/download/v1.4.1/cfssl_1.4.1_linux_amd64"
+
+
+-   name: "check if cfssljson already exists"
+    stat:
+        path: "{{pki_gen_bin}}/cfssljson"
+    register: cfssljson
+
+-   name: "download CloudFlare SSL JSON (cfssljson)"
+    when: cfssljson.stat.exists == false
+    get_url:
+        dest: "{{pki_gen_bin}}/cfssljson"
+        url: "https://github.com/cloudflare/cfssl/releases/download/v1.4.1/cfssljson_1.4.1_linux_amd64"
+
+-  name: make cfssl executable
+   file:
+     path: "{{pki_gen_bin}}/cfssl"
+     mode: "a+rx"
+
+-  name: make cfssljson executable
+   file:
+    path: "{{pki_gen_bin}}/cfssljson"
+    mode: "a+rx"
+  

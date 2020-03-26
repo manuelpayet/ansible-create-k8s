@@ -1,0 +1,38 @@
+- hosts: localhost
+  tasks:
+    - shell: "ping -q {{item}} -c1 | head -n1 | egrep -o '([0-9]{1,3}\\.){3}[0-9]{1,3}'"
+      register: ip_resolution_command
+      loop: "{{groups.all}}"
+      changed_when: "False" #don't consider the ip collection as a change
+
+    - name: collect ip per host as resolved by local machine
+      set_fact: 
+        ip_for_host: "{{ip_for_host| default({}) | combine ( {item.item: item.stdout} ) }}"
+      with_items: "{{ip_resolution_command.results}}"
+    
+    - debug: 
+        msg: "{{ip_for_host}}"
+
+        
+- hosts: localhost
+  vars_files:
+  - group_vars/all.yml
+  
+  vars:
+    workers_in_inventory: "{{groups.kubeworker}}"
+    ip_for_host: "{{ip_for_host}}"
+  tasks:
+    - include_role: 
+        name: prerequisites
+    - include_role: 
+        name: certificate-authority
+
+
+
+- hosts: kubeworker
+  tasks:
+    - include_role:
+        name: etcd
+  vars: 
+    ip_for_host: "{{hostvars['localhost']['ip_for_host']}}"
+    workers_in_inventory: "{{groups.kubeworker}}"

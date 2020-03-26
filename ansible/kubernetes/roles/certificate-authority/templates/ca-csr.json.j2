@@ -1,0 +1,20 @@
+{
+  "CA": {
+    "expiry": "{{pki.ca_expiry}}",
+    "pathlen": 0
+  },
+  "CN": "Kubernetes CA",
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  },
+  "names": [
+    {
+      "C": "{{pki.owner.country}}",
+      "L": "{{pki.owner.location}}",
+      "O": "{{pki.owner.organization}}",
+      "OU": "{{pki.owner.organization_unit}}",
+      "ST": "{{pki.owner.state}}"
+    }
+  ]
+}

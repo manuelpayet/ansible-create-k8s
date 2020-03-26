@@ -1,0 +1,18 @@
+- name: create etcd bin directory
+  file:
+    state: directory
+    path: "{{etcd_install_folder}}/bin"
+    mode: u=rwx,g=r,o=
+    owner: etcd
+    group: etcd
+  become: yes
+
+- name: extract etcd binary to workers
+  unarchive:
+    copy: true
+    src: "{{binaries_etcd}}/etcd.tar.gz"
+    dest: "{{etcd_install_folder}}/bin"
+    extra_opts:
+        - --strip-components=1
+  become: yes
+

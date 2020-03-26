@@ -1,0 +1,20 @@
+---
+binaries: "~/ansible/binaries"
+binaries_etcd: "{{binaries}}/etcd"
+pki_gen: "~/ansible/pki"
+pki_gen_bin: "~/ansible/pki/bin"
+pki_gen_conf: "{{pki_gen}}/conf"
+pki_gen_certs: "{{pki_gen}}/certs"
+
+
+
+pki:
+    owner:
+        country: "FR"
+        location: "Nouvelle Aquitaine"
+        organization: "manuelpayet, Inc"
+        organization_unit: "mon bureau"
+        state: ""
+    ca_expiry: 14400h #14400 hours=600 days
+    signing_expiry: 14400h #14400 hours=600 days
+    renew_ca_if_less_than: +7200h #7200 hours=300 days

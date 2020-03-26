@@ -1,0 +1,10 @@
+all:
+    children:
+        kubemaster:
+            hosts:
+                master-0:
+                master-1:
+        kubeworker:
+            hosts:
+                worker-0:
+                worker-1:

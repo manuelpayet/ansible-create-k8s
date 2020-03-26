@@ -1,0 +1,14 @@
+-   name: "prepare download folder"
+    file:
+        state: directory
+        path: "{{binaries}}"
+
+- name: "prepare etcd download folder"
+  file:
+      state: directory
+      path: "{{binaries_etcd}}"
+
+- name: download etcd binaries
+  get_url:
+    url: https://github.com/etcd-io/etcd/releases/download/v3.4.5/etcd-v3.4.5-linux-amd64.tar.gz
+    dest: "{{binaries_etcd}}/etcd.tar.gz"

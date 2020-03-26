@@ -1,0 +1,5 @@
+---
+- include: prerequisites.yml
+- include: copy_certificate.yml
+- include: copy_binaries.yml
+- include: create_service.yml

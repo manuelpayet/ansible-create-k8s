@@ -1,0 +1,18 @@
+- name: create etcd group
+  group:
+      name: etcd
+      system: yes 
+  become: yes
+
+- name: create etcd user
+  user:
+      name: etcd
+      comment: etcd system account
+      create_home: yes 
+      password_lock: no
+      home: "{{etcd_install_folder}}"
+      password: undefined
+      group: etcd
+      shell: /bin/bash
+      system: yes
+  become: yes

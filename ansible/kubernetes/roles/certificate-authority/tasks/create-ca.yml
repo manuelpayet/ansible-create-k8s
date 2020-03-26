@@ -1,0 +1,55 @@
+- name: "prepare config folder"
+  file:
+    state: directory
+    path: "{{pki_gen_conf}}"
+  
+- name: "prepare certs folder"
+  file:
+    state: directory
+    path: "{{pki_gen_certs}}"
+
+
+- name: "Check if ca exists"
+  stat:
+      path: "{{pki_gen_certs}}/ca.pem"
+  register: "ca_file"
+
+
+- name: "Check whether that certificate is valid for at least {{pki.renew_if_less_than}}"
+  openssl_certificate_info:
+    path: "{{pki_gen_certs}}/ca.pem"
+    valid_at:
+      min_renewal_condition: "{{pki.renew_ca_if_less_than}}"
+  when: ca_file.stat.exists
+  register: certificate_info
+
+
+- name: "generate ca config"
+  template:
+    src: "templates/config.json.j2" 
+    dest: "{{pki_gen_conf}}/config.json"
+  register: ca_config
+
+
+- name: "generate ca csr (autosigned certificate)"
+  template:
+    src: "templates/ca-csr.json.j2" 
+    dest: "{{pki_gen_conf}}/ca-csr.json"
+  register: ca_csr_config
+
+
+- name: "Check if ca needs to be (re)created"
+  set_fact:
+    recreate_ca: "{{ca_config.changed or ca_csr_config.changed or not ca_file.stat.exists or not certificate_info.valid_at.min_renewal_condition}}"
+    
+
+- name: "generate CA"
+  shell: |
+    set -e
+    cd {{pki_gen_conf}}
+    {{pki_gen_bin}}/cfssl gencert -initca ca-csr.json | {{pki_gen_bin}}/cfssljson -bare ca -
+    mv -v ca.pem ca-key.pem {{pki_gen_certs}}
+  args:
+    executable: /bin/bash
+  when:
+    - recreate_ca

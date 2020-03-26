@@ -1,0 +1,15 @@
+- name: create etcd certificates folder
+  file:
+    state: directory
+    path: "{{etcd_certs_folder}}"
+
+- name: generate etcd CSR request file
+  template: 
+    src: "templates/etcd-csr.json.j2"
+    dest: "{{pki_gen_conf}}/etcd-csr.json"
+
+- name: "generate etcd certificates (one per host)"
+  include_tasks: subtask/single-create-etcd-cert.yml 
+  vars:
+    target_etcd_host: "{{item}}"
+  loop: "{{workers_in_inventory}}"
