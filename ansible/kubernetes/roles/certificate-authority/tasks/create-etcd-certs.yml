@@ -5,11 +5,14 @@
 
 - name: generate etcd CSR request file
   template: 
-    src: "templates/etcd-csr.json.j2"
+    src: "templates/csr.json.j2"
     dest: "{{pki_gen_conf}}/etcd-csr.json"
 
 - name: "generate etcd certificates (one per host)"
-  include_tasks: subtask/single-create-etcd-cert.yml 
+  include_tasks: subtask/single-create-cert.yml 
   vars:
-    target_etcd_host: "{{item}}"
+    used_signing_ca_prefix: "{{pki_gen_certs}}/ca"
+    csr_path: "{{pki_gen_conf}}/etcd-csr.json"
+    dest_cert_folder: "{{etcd_certs_folder}}"
+    cert_name: "{{item}}"
   loop: "{{workers_in_inventory}}"

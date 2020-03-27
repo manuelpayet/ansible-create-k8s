@@ -1,0 +1,36 @@
+- name: "Check if ca exists"
+  stat:
+      path: "{{used_signing_ca_prefix}}.pem"
+  register: "ca_file"
+
+- name: "fail if CA doesnt exist"
+  fail: msg="CA doesn't exist, impossible to create a key pair for etcd host {{cert_name}}"
+  when: 
+    - not ca_file.stat.exists
+
+- name: "Check if certificate exists"
+  stat:
+    path: "{{dest_cert_folder}}/{{cert_name}}.pem"
+  register: "cert"
+
+- name: "Check if CA is newer than cert for {{cert_name}}"
+  set_fact:
+    ca_is_newer: "{{ca_file.stat.ctime - cert.stat.ctime > 0}}"
+  when:
+    - ca_file.stat.exists
+    - cert.stat.exists
+
+- name: "Check if CA needs to (re)create certificates"
+  set_fact:
+    create_cert: "{{not cert.stat.exists or ca_is_newer}}"
+
+
+-   name: "generate etcd cert for {{cert_name}}"
+    shell: |
+        set -e
+        cd {{dest_cert_folder}}
+        {{pki_gen_bin}}/cfssl gencert -ca {{used_signing_ca_prefix}}.pem -ca-key {{used_signing_ca_prefix}}-key.pem {{csr_path}} | {{pki_gen_bin}}/cfssljson -bare {{cert_name}}
+    args:
+        executable: /bin/bash
+    when:
+        - create_cert

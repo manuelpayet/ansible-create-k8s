@@ -1,2 +1,5 @@
 ---
 # defaults file for kube-master
+
+bootstrap_token: Ym9vdHN0cmFwIHRva2VuIHRvIG92ZXJyaWRlCg==
+encryption_secret: ZW5jcnlwdGlvbiBzZWNyZXQgdG8gb3ZlcnJpZGUK

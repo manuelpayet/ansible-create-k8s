@@ -9,15 +9,16 @@
       name: kubernetes 
       comment: kubernetes system account 
       create_home: yes 
-      home: {{kube-install}}
+      home: "{{kube_install}}"
       group: kubernetes
       shell: /bin/bash 
       system: yes
+  become: yes
 
 - name: create kubernetes bin folder
   file:
     state: directory
     owner: kubernetes
-    path: "{{kube-install}}/bin"
+    path: "{{kube_install}}/bin"
     mode: u=rwx,g=rx,o=
-
+  become: yes

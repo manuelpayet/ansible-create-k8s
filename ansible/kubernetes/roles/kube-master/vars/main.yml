@@ -1,2 +1,4 @@
 ---
-kube-install: /opt/kube-server
+kube_install: /opt/kube-server
+kube_certs: "{{kube_install}}/certs"
+kube_conf: "{{kube_install}}/etc"
