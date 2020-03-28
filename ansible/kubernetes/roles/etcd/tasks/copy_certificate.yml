@@ -7,24 +7,6 @@
     group: etcd
   become: true
 
-- name: copy root certificate authority
-  copy: 
-    src: "{{pki_gen_certs}}/ca.pem"
-    dest: "{{etcd_install_folder}}/certs/ca.pem"
-  become: true
-
-- name: copy root certificate authority
-  copy: 
-    src: "{{pki_gen_certs}}/ca.pem"
-    dest: "/usr/local/share/ca-certificates/ansible-root-ca.pem"
-  become: true
-
-
-- name: update root certificates
-  shell: "update-ca-certificates"
-  become: true
-
-
 - name: copy certificate authority
   copy: 
     src: "{{pki_gen_certs}}/etcd-ca.pem"
