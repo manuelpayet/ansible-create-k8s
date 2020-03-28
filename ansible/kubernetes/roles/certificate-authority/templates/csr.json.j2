@@ -1,7 +1,7 @@
 {
-    "CN": "etcd",
+    "CN": "{{common_name}}",
     "hosts": [
-      {% for host in workers_in_inventory%}
+      {% for host in masters_in_inventory%}
       "{{host}}",
       "{{ip_for_host[host]}}",
       {% endfor %}
@@ -14,7 +14,7 @@
     "names": [
       {
         "O": "manuelpayet, inc",
-        "OU": "etcd cluster",
+        "OU": "{{organization_unit}}",
         "L": "mon bureau"
       }
     ]

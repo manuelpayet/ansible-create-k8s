@@ -1,1 +1,0 @@
-etcd_certs_folder: "{{pki_gen_certs}}/etcd-certs"

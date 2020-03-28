@@ -7,12 +7,17 @@
   template: 
     src: "templates/csr.json.j2"
     dest: "{{pki_gen_conf}}/etcd-csr.json"
+  vars:
+    common_name: etcd
+    organization_unit: etcd cluster
 
 - name: "generate etcd certificates (one per host)"
   include_tasks: subtask/single-create-cert.yml 
   vars:
-    used_signing_ca_prefix: "{{pki_gen_certs}}/ca"
+#    used_signing_ca_prefix: "{{pki_gen_certs}}/ca"
+    used_signing_ca_prefix: "{{pki_gen_certs}}/etcd-ca"
     csr_path: "{{pki_gen_conf}}/etcd-csr.json"
     dest_cert_folder: "{{etcd_certs_folder}}"
     cert_name: "{{item}}"
-  loop: "{{workers_in_inventory}}"
+  loop: "{{masters_in_inventory}}"
+

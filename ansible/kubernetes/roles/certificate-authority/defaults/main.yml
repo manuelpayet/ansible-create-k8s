@@ -1,0 +1,8 @@
+ca_expiry: "{{pki.ca_expiry}}"
+owner:
+    country: "{{pki.owner.country}}"
+    location: "{{pki.owner.location}}"
+    organization: "{{pki.owner.organization}}"
+    organization_unit: "{{pki.owner.organization_unit}}"
+    state: "{{pki.owner.state}}"
+    

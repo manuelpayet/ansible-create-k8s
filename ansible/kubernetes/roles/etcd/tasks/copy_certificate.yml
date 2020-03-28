@@ -1,4 +1,4 @@
-- name: create etcd cert folder for worker hosts
+- name: create etcd cert folder for cluster hosts
   file:
     state: directory
     path: "{{etcd_install_folder}}/certs"
@@ -7,10 +7,28 @@
     group: etcd
   become: true
 
-- name: copy certificate authority
+- name: copy root certificate authority
   copy: 
     src: "{{pki_gen_certs}}/ca.pem"
     dest: "{{etcd_install_folder}}/certs/ca.pem"
+  become: true
+
+- name: copy root certificate authority
+  copy: 
+    src: "{{pki_gen_certs}}/ca.pem"
+    dest: "/usr/local/share/ca-certificates/ansible-root-ca.pem"
+  become: true
+
+
+- name: update root certificates
+  shell: "update-ca-certificates"
+  become: true
+
+
+- name: copy certificate authority
+  copy: 
+    src: "{{pki_gen_certs}}/etcd-ca.pem"
+    dest: "{{etcd_install_folder}}/certs/etcd-ca.pem"
   become: true
 
 - name: copy etcd public key to worker hosts
@@ -19,7 +37,7 @@
     dest: "{{etcd_install_folder}}/certs/"
   become: true
 
-- name: copy etcd private key to worker hosts
+- name: copy etcd private key to cluster hosts
   copy: 
     src: "{{etcd_certs_folder}}/{{inventory_hostname}}-key.pem"
     dest: "{{etcd_install_folder}}/certs/"

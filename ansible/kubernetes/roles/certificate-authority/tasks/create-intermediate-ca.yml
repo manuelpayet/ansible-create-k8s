@@ -1,0 +1,61 @@
+- name: "Check if root ca exists"
+  stat:
+      path: "{{pki_gen_certs}}/ca.pem"
+  register: "root_ca_file"
+
+
+# - name: "Check whether that certificate is valid for at least {{pki.renew_if_less_than}}"
+#   openssl_certificate_info:
+#     path: "{{pki_gen_certs}}/ca.pem"
+#     valid_at:
+#       min_renewal_condition: "{{pki.renew_ca_if_less_than}}"
+#   when: ca_file.stat.exists
+#   register: certificate_info
+
+
+- name: "generate ca config"
+  template:
+    src: "templates/config.json.j2" 
+    dest: "{{pki_gen_conf}}/{{authority_name}}-config.json"
+  vars:
+    is_ca: "true"
+  register: ca_config
+
+
+- name: "generate intermediate ca csr"
+  template:
+    src: "templates/ca-csr.json.j2" 
+    dest: "{{pki_gen_conf}}/{{authority_name}}-ca-csr.json"
+  register: ca_csr_config
+  vars: 
+    certificate_common_name: "{{certificate_common_name}}"
+
+
+- name: "Check if ca needs to be (re)created"
+  set_fact:
+#    recreate_ca: "{{ca_config.changed or ca_csr_config.changed or not ca_file.stat.exists or not certificate_info.valid_at.min_renewal_condition}}"
+    recreate_ca: true   
+
+- name: "generate {{authority_name}} key"
+  shell: |
+    set -e
+    cd {{pki_gen_conf}}
+     {{pki_gen_bin}}/cfssl genkey -initca {{pki_gen_conf}}/{{authority_name}}-ca-csr.json | {{pki_gen_bin}}/cfssljson -bare {{pki_gen_certs}}/{{authority_name}} 
+
+  args:
+    executable: /bin/bash
+  when:
+    - recreate_ca
+
+- name: "generate {{authority_name}} ca"
+  shell: |
+      set -e
+      cd {{pki_gen_conf}}
+      {{pki_gen_bin}}/cfssl sign -config {{pki_gen_conf}}/{{authority_name}}-config.json -ca {{pki_gen_certs}}/ca.pem -ca-key {{pki_gen_certs}}/ca-key.pem  -profile default {{pki_gen_certs}}/{{authority_name}}.csr | {{pki_gen_bin}}/cfssljson -bare {{pki_gen_certs}}/{{authority_name}}
+  args:
+    executable: /bin/bash
+  when:
+    - recreate_ca
+
+
+  

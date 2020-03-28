@@ -1,4 +1,16 @@
 ---
 - include: prepare-binaries.yml
-- include: create-ca.yml
-- include: create-etcd-certs.yml
+- name: create Root CA for kubernetes
+  include: create-root-ca.yml
+  vars:
+    certificate_common_name: Kubernetes root CA
+    authority_name: ca
+
+- name: create Root CA for etcd cluster
+  include: create-root-ca.yml
+  vars:
+    certificate_common_name: etcd root CA
+    authority_name: etcd-ca
+
+- name: create etcd certs
+  include: create-etcd-certs.yml

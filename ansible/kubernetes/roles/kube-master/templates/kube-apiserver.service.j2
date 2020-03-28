@@ -5,14 +5,19 @@ After=network-online.target
 [Service]
 Type=simple
 
+#sudo -u etcd {{etcd_install_folder}}/bin/etcdctl --cacert="{{etcd_install_folder}}/certs/ca.pem" --cert="{{etcd_install_folder}}/certs/{{inventory_hostname}}.pem" --key="{{etcd_install_folder}}/certs/{{inventory_hostname}}-key.pem" put $key bar
+
 # maybe add webhook autorization-mode?
-ExecStart={{kube_install}}/kube-apiserver --advertise-address {{ip_for_host[inventory_hostname]}} \
-          --alsologtostderr --authorization-mode RBAC,Node \
-          --bind-address 0.0.0.0 \
-          --client-ca-file "{{kube_certs}}/kube-apiserver-ca.pem" \
-          --enable-bootstrap-token-auth true \
-          --encryption-provider-config "{{kube_conf}}/encryption-provider-config.yml"
-          --etcd-cafile "{{kube_certs}}/ca.pem" --etcd-certfile "{{kube_certs}}/etcd-ca.pem"
+ExecStart={{kube_install}}/kube-apiserver --advertise-address={{ip_for_host[inventory_hostname]}} \
+          --alsologtostderr --authorization-mode=RBAC,Node \
+          --bind-address=0.0.0.0 \
+          --client-ca-file="{{etcd_install_folder}}/certs/etcd-ca.pem" \
+          --enable-bootstrap-token-auth=true \
+          --encryption-provider-config="{{kube_conf}}/encryption-provider-config.yml"
+          --etcd-cafile="{{etcd_install_folder}}/certs/etcd-ca.pem" \
+          --etcd-certfile="{{etcd_install_folder}}/certs/{{inventory_hostname}}.pem" --etcd-keyfile="{{etcd_install_folder}}/certs/{{inventory_hostname}}-key.pem" \
+          --etcd-servers="{% for host in workers_in_inventory %}{{host}}=https://{{ip_for_host[host]}}:2380,{% endfor %}" \
+          --external-hostname="{{inventory_hostname}}" 
 
 
 

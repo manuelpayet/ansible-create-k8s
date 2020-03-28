@@ -18,6 +18,12 @@
     enabled: yes
   become: yes
 
+- name: stop etcd service
+  systemd:
+    name: etcd.service
+    state: stopped
+  become: yes
+
 - name: start etcd service
   systemd:
     name: etcd.service
@@ -34,8 +40,8 @@
   shell: | 
     set -e
     key=foo_`date +%s`
-    sudo -u etcd {{etcd_install_folder}}/bin/etcdctl --cacert="{{etcd_install_folder}}/certs/ca.pem" --cert="{{etcd_install_folder}}/certs/{{inventory_hostname}}.pem" --key="{{etcd_install_folder}}/certs/{{inventory_hostname}}-key.pem" put $key bar
-    sudo -u etcd {{etcd_install_folder}}/bin/etcdctl --cacert="{{etcd_install_folder}}/certs/ca.pem" --cert="{{etcd_install_folder}}/certs/{{inventory_hostname}}.pem" --key="{{etcd_install_folder}}/certs/{{inventory_hostname}}-key.pem" del $key
+    sudo -u etcd {{etcd_install_folder}}/bin/etcdctl --cacert="{{etcd_install_folder}}/certs/etcd-ca.pem" --cert="{{etcd_install_folder}}/certs/{{inventory_hostname}}.pem" --key="{{etcd_install_folder}}/certs/{{inventory_hostname}}-key.pem" put $key bar
+    sudo -u etcd {{etcd_install_folder}}/bin/etcdctl --cacert="{{etcd_install_folder}}/certs/etcd-ca.pem" --cert="{{etcd_install_folder}}/certs/{{inventory_hostname}}.pem" --key="{{etcd_install_folder}}/certs/{{inventory_hostname}}-key.pem" del $key
   retries: 10
   delay: 2
   changed_when: False

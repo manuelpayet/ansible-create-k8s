@@ -81,7 +81,8 @@ Vagrant.configure("2") do |config|
     ansible.vm.provision "shell", inline: "sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 93C4A3FD7BB9C367"
     ansible.vm.provision "shell", inline: "sudo apt update"
     ansible.vm.provision "shell", inline: "sudo apt install -y ansible"
-
+    ansible.vm.provision "shell", inline: "sudo apt install -y jq"
+    
     ansible.vm.provision "file", source: "./autocomplete/ansible-completion.bash", destination: "~/ansible-completion.bash"
     ansible.vm.provision "shell", inline: "sudo mv ~vagrant/ansible-completion.bash /etc/bash_completion.d/ansible-completion.bash && sudo chmod +x /etc/bash_completion.d/ansible-completion.bash"
 

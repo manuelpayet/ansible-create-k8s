@@ -12,6 +12,8 @@
     
     - debug: 
         msg: "{{ip_for_host}}"
+  tags:
+    - certificates
 
         
 - hosts: localhost
@@ -20,21 +22,23 @@
   
   vars:
     workers_in_inventory: "{{groups.kubeworker}}"
+    masters_in_inventory: "{{groups.kubemaster}}"
     ip_for_host: "{{ip_for_host}}"
   tasks:
     - include_role: 
         name: prerequisites
     - include_role: 
         name: certificate-authority
+  tags:
+    - certificates
 
-
-- hosts: kubeworker
+- hosts: kubemaster
   tasks:
     - include_role:
         name: etcd
   vars: 
     ip_for_host: "{{hostvars['localhost']['ip_for_host']}}"
-    workers_in_inventory: "{{groups.kubeworker}}"
+    masters_in_inventory: "{{groups.kubemaster}}"
 
 - hosts: kubemaster
   tasks:

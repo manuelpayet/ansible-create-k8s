@@ -7,8 +7,7 @@ pki_gen: "~/ansible/pki"
 pki_gen_bin: "~/ansible/pki/bin"
 pki_gen_conf: "{{pki_gen}}/conf"
 pki_gen_certs: "{{pki_gen}}/certs"
-
-
+etcd_certs_folder: "{{pki_gen_certs}}/etcd-certs"
 
 pki:
     owner:
