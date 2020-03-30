@@ -1,7 +1,8 @@
 ---
 - include: prerequisites.yml
 - include: copy_certificates.yml
+- include: kubectl.yml
 - include: encryption-provider-config.yml
 - include: kube-apiserver.yml
-- include: kubectl.yml
 - include: kube-controller-manager.yml
+- include: kube-scheduler.yml

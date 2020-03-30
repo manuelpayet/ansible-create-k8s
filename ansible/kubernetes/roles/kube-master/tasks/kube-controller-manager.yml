@@ -13,8 +13,11 @@
 
 - name: copy kubernetes controller manager kubeconfig
   template:
-    src: "templates/kube-controller-manager-config.yml.j2"
+    src: "templates/kubeconfig.yml.j2"
     dest: "{{kube_install}}/etc/controller-manager-kubeconfig.yml"
+  vars:
+    client_certificate: "{{kube_certs}}/kube-controller-manager.pem"
+    client_key: "{{kube_certs}}/kube-controller-manager-key.pem"
   register: kube_controller_manager_service_create
   become: yes
 

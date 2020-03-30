@@ -1,0 +1,18 @@
+[Unit]
+Description=Kube Scheduler
+After=network-online.target
+ 
+[Service]
+Type=simple
+
+ExecStart={{kube_install}}/bin/kube-scheduler \
+            --config="{{kube_install}}/etc/kube-scheduler.yml" \
+            -v=2
+
+Restart=on-failure
+ 
+# Configures the time to wait before service is stopped forcefully.
+TimeoutStopSec=300
+ 
+[Install]
+WantedBy=multi-user.target

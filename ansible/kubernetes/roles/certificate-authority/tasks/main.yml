@@ -21,5 +21,8 @@
 - name: create service account certs
   include: create-service-account-certs.yml
 
-- name: create controller manager cert
-  include: create-kube-controller-manager.yml
+- name: create controller manager certs
+  include: create-kube-controller-manager-certs.yml
+
+- name: create kube-scheduler certs
+  include: create-kube-scheduler-certs.yml

@@ -50,10 +50,21 @@
     dest: "{{kube_certs}}/kube-controller-manager.pem"
   become: true
 
-
 - name: copy kube-controller-manager private key to master hosts
   copy: 
     src: "{{pki_gen_certs}}/kube-controller-manager-key.pem"
     dest: "{{kube_certs}}/kube-controller-manager-key.pem"
+  become: true
+  
+- name: copy kube-scheduler public key to master hosts
+  copy: 
+    src: "{{pki_gen_certs}}/kube-scheduler.pem"
+    dest: "{{kube_certs}}/kube-scheduler.pem"
+  become: true
+
+- name: copy kube-controller-manager private key to master hosts
+  copy: 
+    src: "{{pki_gen_certs}}/kube-scheduler-key.pem"
+    dest: "{{kube_certs}}/kube-scheduler-key.pem"
   become: true
   

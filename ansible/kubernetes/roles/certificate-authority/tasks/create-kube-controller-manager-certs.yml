@@ -7,7 +7,7 @@
     organization_unit: kubernetes cluster
     hosts_in_csr: []
 
-- name: "generate service account certs (authentication between kube controller and kube api servers)"
+- name: "generate kube controller manager account certs (authentication between kube controller and kube api servers)"
   include_tasks: subtask/single-create-cert.yml 
   vars:
     used_signing_ca_prefix: "{{pki_gen_certs}}/ca"
