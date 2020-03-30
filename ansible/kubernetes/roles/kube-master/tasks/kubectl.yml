@@ -1,0 +1,11 @@
+- name: install kubectl
+  unarchive:
+      src: "{{binaries_k8s_server}}/kubernetes-server-linux-amd64.tar.gz" 
+      copy: true
+      dest: "{{kube_install}}/bin" 
+      owner: kubernetes 
+      extra_opts:  
+        - --strip=3
+        - --wildcards
+        - '*/kubectl'
+  become: yes

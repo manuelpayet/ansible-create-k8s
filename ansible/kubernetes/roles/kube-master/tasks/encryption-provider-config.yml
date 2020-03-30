@@ -1,0 +1,11 @@
+- name: "create configuration folder"
+  file:
+    state: directory
+    path: "{{kube_conf}}"
+  become: yes
+
+- name: create encryption provider configuration
+  template:
+    src: "templates/encryption-provider-config.yml.j2"
+    dest: "{{kube_conf}}/encryption-provider-config.yml"
+  become: yes

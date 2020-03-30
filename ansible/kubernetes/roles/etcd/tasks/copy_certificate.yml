@@ -11,16 +11,19 @@
   copy: 
     src: "{{pki_gen_certs}}/etcd-ca.pem"
     dest: "{{etcd_install_folder}}/certs/etcd-ca.pem"
+    force: no
   become: true
 
 - name: copy etcd public key to worker hosts
   copy: 
     src: "{{etcd_certs_folder}}/{{inventory_hostname}}.pem"
     dest: "{{etcd_install_folder}}/certs/"
+    force: no
   become: true
 
 - name: copy etcd private key to cluster hosts
   copy: 
     src: "{{etcd_certs_folder}}/{{inventory_hostname}}-key.pem"
     dest: "{{etcd_install_folder}}/certs/"
+    force: no
   become: true

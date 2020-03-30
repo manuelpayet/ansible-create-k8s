@@ -10,6 +10,7 @@
   vars:
     common_name: etcd
     organization_unit: etcd cluster
+    hosts_in_csr: "{{masters_in_inventory}}"
 
 - name: "generate etcd certificates (one per host)"
   include_tasks: subtask/single-create-cert.yml 

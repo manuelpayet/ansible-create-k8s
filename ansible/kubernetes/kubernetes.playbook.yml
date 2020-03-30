@@ -9,11 +9,8 @@
       set_fact: 
         ip_for_host: "{{ip_for_host| default({}) | combine ( {item.item: item.stdout} ) }}"
       with_items: "{{ip_resolution_command.results}}"
-    
-    - debug: 
-        msg: "{{ip_for_host}}"
   tags:
-    - certificates
+    - always
 
         
 - hosts: localhost
@@ -48,4 +45,5 @@
     ip_for_host: "{{hostvars['localhost']['ip_for_host']}}"
     masters_in_inventory: "{{groups.kubemaster}}"
     bootstrap_token: "{{ lookup('password', '/tmp/passwordfile chars=ascii_letters,digits,hexdigits,punctuation') | b64encode}}"
-    encryption_secret: "{{ lookup('password', '/tmp/passwordfile chars=ascii_letters,digits,hexdigits,punctuation') | b64encode}}"
+  tags: 
+    - kubemaster

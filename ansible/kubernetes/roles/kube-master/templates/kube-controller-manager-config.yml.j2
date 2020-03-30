@@ -1,0 +1,20 @@
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority: /opt/kube-server/certs/ca.pem
+    server: https://localhost:6443
+  name: local
+contexts:
+- context:
+    cluster: local
+    namespace: frontend
+    user: system
+  name: local-context
+current-context: "local-context"
+kind: Config
+preferences: {}
+users:
+- name: system
+  user:
+    client-certificate: "{{kube_certs}}/kube-controller-manager.pem"
+    client-key: "{{kube_certs}}/kube-controller-manager-key.pem"

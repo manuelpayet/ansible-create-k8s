@@ -1,0 +1,23 @@
+[Unit]
+Description=Kube Controller manager
+After=network-online.target
+ 
+[Service]
+Type=simple
+
+ExecStart={{kube_install}}/bin/kube-controller-manager \
+            --kubeconfig="{{kube_install}}/etc/controller-manager-kubeconfig.yml" \
+            --bind-address="0.0.0.0" \
+            --client-ca-file="{{kube_certs}}/ca.pem" \
+            --cluster-signing-cert-file="{{kube_certs}}/ca.pem" --cluster-signing-key-file="{{kube_certs}}/ca-key.pem" \
+            --service-account-private-key-file="{{kube_certs}}/service-account-key.pem" \
+            --leader-elect=true \
+            --service-cluster-ip-range="10.30.0.0/24" \
+            --tls-cert-file="{{kube_certs}}/ca.pem" --tls-private-key-file="{{kube_certs}}/ca-key.pem"
+Restart=on-failure
+ 
+# Configures the time to wait before service is stopped forcefully.
+TimeoutStopSec=300
+ 
+[Install]
+WantedBy=multi-user.target

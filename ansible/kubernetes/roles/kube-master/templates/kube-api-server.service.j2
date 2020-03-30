@@ -1,0 +1,37 @@
+[Unit]
+Description=Kube API Server
+After=network-online.target
+ 
+[Service]
+Type=simple
+
+
+# maybe add webhook autorization-mode?
+# maybe add --service-account-signing-key-file string, looks like it is useful if we want to access the kube api from a pod? not sure, have to check
+ExecStart={{kube_install}}/bin/kube-apiserver --advertise-address={{ip_for_host[inventory_hostname]}} \
+          --alsologtostderr --authorization-mode=RBAC,Node \
+          --bind-address=0.0.0.0 \
+          --client-ca-file="{{kube_certs}}/ca.pem" \
+          --enable-bootstrap-token-auth=true \
+          --encryption-provider-config="{{kube_conf}}/encryption-provider-config.yml" \
+          --etcd-cafile="{{kube_certs}}/etcd-ca.pem" \
+          --etcd-certfile="/opt/etcd/certs/{{inventory_hostname}}.pem" --etcd-keyfile="/opt/etcd/certs/{{inventory_hostname}}-key.pem" \
+          --etcd-servers="{% for host in masters_in_inventory %}https://{{ip_for_host[host]}}:2379{%if not loop.last%},{%endif%}{% endfor %}" \
+          --external-hostname="{{inventory_hostname}}" \
+          --kubelet-certificate-authority="{{kube_certs}}/ca.pem" \
+          --kubelet-client-certificate="{{kube_certs}}/kube-api-server-{{inventory_hostname}}.pem" --kubelet-client-key="{{kube_certs}}/kube-api-server-{{inventory_hostname}}-key.pem" \
+          --proxy-client-key-file="{{kube_certs}}/kube-api-server-{{inventory_hostname}}-key.pem" \
+          --runtime-config="api/all=true" \
+          --service-account-key-file="{{kube_certs}}/service-account.pem" \
+          --service-cluster-ip-range="10.20.0.0/24" \
+          --tls-cert-file="{{kube_certs}}/kube-api-server-{{inventory_hostname}}.pem" --tls-private-key-file="{{kube_certs}}/kube-api-server-{{inventory_hostname}}-key.pem" \
+          -v=2
+
+
+Restart=on-failure
+ 
+# Configures the time to wait before service is stopped forcefully.
+TimeoutStopSec=300
+ 
+[Install]
+WantedBy=multi-user.target

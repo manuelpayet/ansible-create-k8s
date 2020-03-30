@@ -14,3 +14,12 @@
 
 - name: create etcd certs
   include: create-etcd-certs.yml
+
+- name: create kube api servers certs
+  include: create-kube-apiserver-certs.yml
+
+- name: create service account certs
+  include: create-service-account-certs.yml
+
+- name: create controller manager cert
+  include: create-kube-controller-manager.yml

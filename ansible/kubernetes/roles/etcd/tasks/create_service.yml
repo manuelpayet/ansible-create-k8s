@@ -42,6 +42,8 @@
     key=foo_`date +%s`
     sudo -u etcd {{etcd_install_folder}}/bin/etcdctl --cacert="{{etcd_install_folder}}/certs/etcd-ca.pem" --cert="{{etcd_install_folder}}/certs/{{inventory_hostname}}.pem" --key="{{etcd_install_folder}}/certs/{{inventory_hostname}}-key.pem" put $key bar
     sudo -u etcd {{etcd_install_folder}}/bin/etcdctl --cacert="{{etcd_install_folder}}/certs/etcd-ca.pem" --cert="{{etcd_install_folder}}/certs/{{inventory_hostname}}.pem" --key="{{etcd_install_folder}}/certs/{{inventory_hostname}}-key.pem" del $key
+  register: task_result
+  until: task_result.rc == 0
   retries: 10
   delay: 2
   changed_when: False

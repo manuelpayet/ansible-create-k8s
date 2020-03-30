@@ -1,0 +1,17 @@
+- name: generate kube-api server CSR request file
+  template: 
+    src: "templates/csr.json.j2"
+    dest: "{{pki_gen_conf}}/kube-api-server-csr.json"
+  vars:
+    common_name: kube api server member
+    organization_unit: api server cluster
+    hosts_in_csr: "{{masters_in_inventory}}"
+
+- name: "generate kube-api server certificates (one per host)"
+  include_tasks: subtask/single-create-cert.yml 
+  vars:
+    used_signing_ca_prefix: "{{pki_gen_certs}}/ca"
+    csr_path: "{{pki_gen_conf}}/kube-api-server-csr.json"
+    dest_cert_folder: "{{pki_gen_certs}}"
+    cert_name: "kube-api-server-{{item}}"
+  loop: "{{masters_in_inventory}}"
