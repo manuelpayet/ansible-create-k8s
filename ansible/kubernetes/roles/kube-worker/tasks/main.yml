@@ -1,0 +1,5 @@
+---
+# tasks file for kube-worker
+
+- include: prerequisites.yml
+- include: kubelet.yml

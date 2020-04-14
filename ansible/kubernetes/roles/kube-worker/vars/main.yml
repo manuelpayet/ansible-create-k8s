@@ -1,0 +1,4 @@
+---
+    kube_install: /opt/kube-node
+    kube_certs: "{{kube_install}}/certs"
+    kube_conf: "{{kube_install}}/etc"

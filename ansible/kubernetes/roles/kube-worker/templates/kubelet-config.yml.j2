@@ -1,0 +1,17 @@
+apiVersion: kubelet.config.k8s.io/v1beta1
+kind: KubeletConfiguration
+address: 0.0.0.0
+authentication:
+    anonymous:
+        enabled: false
+    x509:
+        clientCAFile: "{{kube_certs}}/ca.pem"
+clusterDNS:
+{% for dns_ip in dns_ip_list %}}
+    - {{ dns_ip }}
+{% endfor %}
+clusterDomain: k8sansible
+makeIPTablesUtilChains: true
+rotateCertificates: true
+tlsCertFile: "{{kube_certs}}/kubelet-{{inventory_hostname}}.pem"
+tlsPrivateKeyFile: "{{kube_certs}}/kubelet-{{inventory_hostname}}-key.pem"

@@ -47,3 +47,10 @@
     bootstrap_token: "{{ lookup('password', '/tmp/passwordfile chars=ascii_letters,digits,hexdigits,punctuation') | b64encode}}"
   tags: 
     - kubemaster
+
+- hosts: kubeworker
+  tasks:
+    - include_role:
+        name: kata-containers
+  tags:
+    - kubeworker

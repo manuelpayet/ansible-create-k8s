@@ -1,7 +1,10 @@
 ---
-binaries: "~/ansible/binaries"
+binaries: "/home/vagrant/ansible/binaries"
+binaries_predownload: "/vagrant/ansible/binaries_predownload"
 binaries_etcd: "{{binaries}}/etcd"
 binaries_k8s_server: "{{binaries}}/kube-server"
+binaries_k8s_client: "{{binaries}}/kube-node"
+
 
 pki_gen: "~/ansible/pki"
 pki_gen_bin: "~/ansible/pki/bin"

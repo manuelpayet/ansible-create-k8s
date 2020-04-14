@@ -31,7 +31,7 @@ Vagrant.configure("2") do |config|
 
 
 
-  (0..2).each {|idx|
+  (0..1).each {|idx|
     config.vm.define "master-#{idx}" do |master|
       add_ssh_pub_key master.vm
       master.vm.provider "virtualbox" do |virtualbox|
@@ -55,7 +55,7 @@ Vagrant.configure("2") do |config|
       add_ssh_pub_key worker.vm
       worker.vm.provider "virtualbox" do |virtualbox|
         virtualbox.cpus = 4
-        virtualbox.memory = 3072
+        virtualbox.memory = 4096
         virtualbox.customize ["modifyvm", :id, "--nested-hw-virt", "on"]
       end
       worker.vm.hostname = "worker-#{idx}"

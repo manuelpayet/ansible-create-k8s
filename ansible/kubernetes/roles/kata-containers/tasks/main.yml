@@ -1,0 +1,105 @@
+---
+
+- name: "add kata-containers repo key"
+  apt_key:
+    url: http://download.opensuse.org/repositories/home:/katacontainers:/releases:/x86_64:/master/Debian_9/Release.key
+    state: present
+  become: yes
+    
+- name: "add kata-containers repo"
+  apt_repository:
+    repo: deb http://download.opensuse.org/repositories/home:/katacontainers:/releases:/x86_64:/master/Debian_9/ /
+    state: present
+    filename: kata-containers
+  become: yes
+
+
+- name: install docker prerequisite packages
+  apt:
+    name: [ 'apt-transport-https', 'ca-certificates', 'curl', 'gnupg2', 'software-properties-common' ]
+    state: present
+  become: yes
+
+- name: "add docker repo key"
+  apt_key:
+    url: https://download.docker.com/linux/debian/gpg
+    state: present
+  become: yes
+
+
+- name: "add docker repo"
+  apt_repository:
+    repo: deb https://download.docker.com/linux/debian stretch stable
+    filename: docker-repo
+    validate_certs: no
+  become: yes
+
+
+- name: Install kata packages
+  apt:
+    name: "{{item}}"
+    state: present
+  with_items:
+    - kata-runtime
+    - kata-proxy
+    - kata-shim
+  become: yes
+
+- name: Install packages for docker
+  apt: 
+    name: "docker-ce"
+    state: present
+  become: yes
+
+- name: create docker service configuration folder
+  file:
+    state: directory
+    path: "/etc/systemd/system/docker.service.d"
+  become: yes
+
+- name: configure docker daemon to use kata-runtime instead of containerd
+  template:
+    src: "templates/kata-containers.conf.j2"
+    dest: "/etc/systemd/system/docker.service.d/kata-containers.conf"
+  become: yes
+  when: False
+
+
+- name: create docker configuration folder
+  file:
+    state: directory
+    path: /etc/docker
+  become: yes
+
+- name: configure docker client to use kata-runtime instead of containerd
+  template: 
+    src: templates/docker-daemon.json.j2
+    dest: /etc/docker/daemon.json
+  become: yes
+
+- name: reload systemd configuration
+  systemd:
+    daemon_reload: yes
+  become: yes
+
+- name: stop docker service
+  systemd:
+    name: docker.service
+    state: stopped
+  register: docker_server_stop
+  until: docker_server_stop is not failed
+  become: yes
+  retries: 5
+  delay: 2
+
+- name: enable docker service
+  systemd:
+    name: docker.service
+    enabled: yes
+  become: yes
+
+- name: start docker service
+  systemd:
+    name: docker.service
+    state: started
+  become: yes

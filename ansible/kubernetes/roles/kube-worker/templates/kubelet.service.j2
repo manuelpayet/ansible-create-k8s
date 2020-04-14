@@ -1,0 +1,25 @@
+[Unit]
+Description=Kubelet
+After=network-online.target
+ 
+[Service]
+Type=simple
+
+ExecStart={{kube_install}}/bin/kubelet \
+            --kubeconfig="{{kube_install}}/etc/kubeconfig.yml" \
+            --config="{{kube_install}}/etc/kubelet-config.yml" \
+            --node-ip="ip_for_host[inventory_hostname]" \
+            --resolve-conf="/etc/resolv.conf" \
+            --cni-conf-dir="/etc/cni/net.d" \
+            --container-runtime="remote" \
+            --runtime-request-timeout="15m" \
+            --container-runtime-endpoint="unix:///run/containerd/containerd.sock" \
+            -v=2
+
+Restart=on-failure
+ 
+# Configures the time to wait before service is stopped forcefully.
+TimeoutStopSec=300
+ 
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,72 @@
+- name: install kubelet
+  unarchive:
+      src: "{{binaries_k8s_client}}/kubernetes-node-linux-amd64.tar.gz" 
+      copy: true
+      dest: "{{kube_install}}/bin" 
+      owner: kubernetes 
+      extra_opts:  
+        - --strip=3
+        - --wildcards
+        - '*/kubelet'
+  become: yes
+
+
+
+# - name: copy kubernetes scheduler kubeconfig
+#   template:
+#     src: "templates/kubeconfig.yml.j2"
+#     dest: "{{kube_install}}/etc/kube-scheduler-kubeconfig.yml"
+#   vars:
+#     client_certificate: "{{kube_certs}}/kube-scheduler.pem"
+#     client_key: "{{kube_certs}}/kube-scheduler-key.pem"
+#   register: kube_scheduler_service_create
+#   become: yes
+
+
+# - name: copy kubernetes scheduler config
+#   template:
+#     src: "templates/kube-scheduler.yml.j2"
+#     dest: "{{kube_install}}/etc/kube-scheduler.yml"
+#   vars:
+#     kube_config: "{{kube_install}}/etc/kube-scheduler-kubeconfig.yml"
+#   register: kube_scheduler_service_create
+#   become: yes
+
+- name: create kubelet systemd service
+  template:
+    src: "templates/kubelet.service.j2"
+    dest: "/etc/systemd/system/kubelet.service"
+  register: kubelet_service_create
+  become: yes
+
+
+- name: reload systemd configuration
+  systemd:
+    daemon_reload: yes
+  when: kubelet_service_create.changed
+  become: yes
+
+- name: activate kubelet service on startup
+  systemd:
+    name: kubelet.service
+    enabled: yes
+  become: yes
+
+- name: stop kubelet service
+  systemd:
+    name: kubelet.service
+    state: stopped
+  become: yes
+
+- name: start kubelet service
+  systemd:
+    name: kubelet.service
+    state: started
+  become: yes
+
+- name: wait for kubelet service to be started
+  service_facts:
+  until: ansible_facts.services['kubelet.service'].state == 'running'
+  retries: 10
+  delay: 2
+
